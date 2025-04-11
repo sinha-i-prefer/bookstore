@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - Bookstore{% endblock %}
+
+{% block content %}
+    <h2>Your Shopping Cart</h2>
+
+    {% if cart_items %}
+        {% for item in cart_items %}
+            <div class="cart-item">
+                <span>
+                    <strong>{{ item.book.title }}</strong> by {{ item.book.author }}
+                </span>
+                <span>
+                    Quantity: {{ item.quantity }}
+                    <form action="{% url 'store:remove_from_cart' item.book.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="button button-danger" style="margin-left: 10px; padding: 2px 5px;">-</button>
+                    </form>
+                     <form action="{% url 'store:add_to_cart' item.book.pk %}" method="post">
+                         {% csrf_token %}
+                         <button type="submit" class="button" style="margin-left: 5px; padding: 2px 5px;">+</button>
+                    </form>
+                </span>
+                <span>Subtotal: ${{ item.subtotal }}</span>
+            </div>
+        {% endfor %}
+
+        <div class="cart-total">
+            Total Price: ${{ total_price }}
+        </div>
+
+        <div style="margin-top: 20px;">
+             <form action="{% url 'store:clear_cart' %}" method="post" style="display: inline-block; margin-right: 10px;">
+                {% csrf_token %}
+                <button type="submit" class="button button-danger">Clear Cart</button>
+            </form>
+
+            <a href="{{ back_url }}" class="button button-secondary">Back to Books</a>
+            </div>
+
+    {% else %}
+        <p>Your cart is empty.</p>
+        <a href="{% url 'store:book_list' %}" class="button button-secondary">Browse Books</a>
+    {% endif %}
+
+{% endblock %}
